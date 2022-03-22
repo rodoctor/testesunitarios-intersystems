@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="IRIS" version="26" zv="IRIS for Windows (x86-64) 2021.1 (Build 215.3U)" ts="2022-03-22 07:53:19">
+<Class name="Desenvolvimento.Calculadora">
+<Super>%RegisteredObject</Super>
+<TimeChanged>66124,44349.889318</TimeChanged>
+<TimeCreated>66012,72084.691003</TimeCreated>
+
+<Method name="Soma">
+<Description>
+Recebe dois parametros inteiros, e retorna a soma dos dois valores</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pValor1:%Integer,pValor2:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[		return pValor1 + pValor2
+]]></Implementation>
+</Method>
+
+<Method name="Subtrair">
+<Description>
+Recebe dois parametros inteiros, e retorna a subtracao do primeiro valor pelo segundo.</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pValor1:%Integer,pValor2:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[		return pValor1 - pValor2
+]]></Implementation>
+</Method>
+
+<Method name="Divisao">
+<Description>
+Recebe dois parametros inteiros, e retorna a divisão do primeiro valor pelo segundo.</Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>pValor1:%Integer,pValor2:%Integer</FormalSpec>
+<ReturnType>%Integer</ReturnType>
+<Implementation><![CDATA[		return pValor1 / pValor2
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="Desenvolvimento.testesUnitarios.CalculadoraTest">
+<Super>Desenvolvimento.utils.testesUnitarios</Super>
+<TimeChanged>66190,28287.659279</TimeChanged>
+<TimeCreated>66005,33526.22863</TimeCreated>
+
+<Parameter name="PACOTECOLECAOTESTES">
+<Default>Desenvolvimento.testesUnitarios</Default>
+</Parameter>
+
+<Method name="TestSomaDoisNumerosInteiros">
+<Implementation><![CDATA[
+	Set retorno = ##class(Desenvolvimento.Calculadora).Soma(2,2)
+	Do $$$AssertEquals(retorno,4, "Teste Soma(2,2)=4")
+]]></Implementation>
+</Method>
+
+<Method name="TestSubtrair">
+<Implementation><![CDATA[
+	Set obj = ##class(Desenvolvimento.Calculadora).%New()
+	Set retorno = obj.Subtrair(2,1)
+	Do $$$AssertEquals(retorno,1, "Teste Subtrair(2,1)=1")
+]]></Implementation>
+</Method>
+
+<Method name="TestDivisao">
+<Implementation><![CDATA[
+	Set obj = ##class(Desenvolvimento.Calculadora).%New()
+	Set retorno = obj.Divisao(2,1)
+	Do $$$AssertEquals(retorno,1, "Teste Divisao(2,0)=1")
+]]></Implementation>
+</Method>
+
+<Method name="ExecutarTestes">
+<ClassMethod>1</ClassMethod>
+<Implementation><![CDATA[
+	Set teste = $CLASSMETHOD($THIS,"%New")
+	Set Status = teste.Executar()
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="Desenvolvimento.utils.testesUnitarios">
+<Abstract>1</Abstract>
+<Super>%RegisteredObject,%UnitTest.TestCase</Super>
+<TimeChanged>66190,28375.810302</TimeChanged>
+<TimeCreated>66011,73920.240532</TimeCreated>
+
+<Parameter name="DIRETORIOTEMPORARIO">
+<Expression>^%SYS("TempDir")</Expression>
+</Parameter>
+
+<Parameter name="DIRETORIOTESTESUNITARIOS">
+<Expression>$NAMESPACE</Expression>
+</Parameter>
+
+<Parameter name="DIRETORIOARMAZENARTESTESUNITARIOS">
+<Expression>..RetornaDiretorioArmazenarTestesUnitariosNormalizado()</Expression>
+</Parameter>
+
+<Method name="Executar">
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	Return ..GerarAmbienteTestes()
+]]></Implementation>
+</Method>
+
+<Method name="GerarAmbienteTestes">
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Try
+	{
+		Set Status 					= $System.Status.OK()
+		
+		Do ..HabilitarVisualizacaoPortalTestes()
+		Do ..SetLocalTestesUnitarios()
+		
+		$$$THROWONERROR(Status, ..ValidaPacoteExiste(..#PACOTECOLECAOTESTES))
+		$$$THROWONERROR(Status, ..ExportarTodasClassesIndividualmente())
+		$$$THROWONERROR(Status, ..ExecutaTestesUnitarios() )
+		
+	}
+	Catch ex
+	{
+		Set Status = ex.AsStatus()
+	}
+	Quit Status
+]]></Implementation>
+</Method>
+
+<Method name="ValidaPacoteExiste">
+<FormalSpec>PacoteColecaoTestes:%String=""</FormalSpec>
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	Set Status = $System.Status.OK()
+	
+	$$$THROWONERROR(Status,$System.OBJ.GetPackageList(.items,PacoteColecaoTestes))
+	
+	Set contemItens = $DATA(items)
+	If ('contemItens)
+	{
+		$$$THROWONERROR(Status,$$$ERROR(5001,"Pacote "_PacoteColecaoTestes_" não encontrado"))
+	}
+	Quit Status
+]]></Implementation>
+</Method>
+
+<Method name="ExportarTodasClassesIndividualmente">
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	Quit $System.OBJ.ExportAllClassesIndividual(..#DIRETORIOARMAZENARTESTESUNITARIOS,,,,..#PACOTECOLECAOTESTES)
+]]></Implementation>
+</Method>
+
+<Method name="ExecutaTestesUnitarios">
+<Private>1</Private>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[	Quit ##class(%UnitTest.Manager).RunTest(..#DIRETORIOARMAZENARTESTESUNITARIOS,"/nodelete")
+]]></Implementation>
+</Method>
+
+<Method name="SetLocalTestesUnitarios">
+<Private>1</Private>
+<Implementation><![CDATA[	Set ^UnitTestRoot = ..#DIRETORIOTEMPORARIO
+]]></Implementation>
+</Method>
+
+<Method name="HabilitarVisualizacaoPortalTestes">
+<Private>1</Private>
+<Implementation><![CDATA[
+	Set namespace = $ZCONVERT($NAMESPACE,"L")
+	Set habilitado = ^SYS("Security","CSP","AllowPrefix","/csp/"_namespace_"/","%UnitTest.")
+	If ('habilitado)
+	{
+		Set ^SYS("Security","CSP","AllowPrefix","/csp/"_namespace_"/","%UnitTest.") = 1
+	}
+]]></Implementation>
+</Method>
+
+<Method name="RetornaDiretorioArmazenarTestesUnitariosNormalizado">
+<ClassMethod>1</ClassMethod>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[	Return ##class(%Library.File).NormalizeDirectory(..#DIRETORIOTEMPORARIO_"/"_..#DIRETORIOTESTESUNITARIOS_"/")
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Project name="TESTES UNITARIOS" LastModified="2022-03-22 07:53:13.940474" Target="##class(Desenvolvimento.testesUnitarios.CalculadoraTest).Run()" TargetType="2">
+  <Items>
+    <ProjectItem name="Desenvolvimento.utils.testesUnitarios" type="CLS"></ProjectItem>
+    <ProjectItem name="Desenvolvimento.testesUnitarios.CalculadoraTest" type="CLS"></ProjectItem>
+    <ProjectItem name="Desenvolvimento.Calculadora" type="CLS"></ProjectItem>
+  </Items>
+  <BreakPoints>
+    <BreakPoint Routine="Desenvolvimento.testesUnitarios.CalculadoraTest.CLS" Offset="ExecutarTestes+1"></BreakPoint>
+    <BreakPoint Routine="Desenvolvimento.utils.testesUnitarios.CLS" Offset="Executar+1"></BreakPoint>
+    <BreakPoint Routine="Desenvolvimento.utils.testesUnitarios.CLS" Offset="GerarAmbienteTestes+3"></BreakPoint>
+  </BreakPoints>
+  <WatchVariables>
+    <WatchVariable Variable="$System.Status.GetErrorText(Status)" Pane="1"></WatchVariable>
+    <WatchVariable Variable="teste" Pane="1"></WatchVariable>
+    <WatchVariable Variable="..#PACOTECOLECAOTESTES" Pane="1"></WatchVariable>
+    <WatchVariable Variable="..#DIRETORIOARMAZENARTESTESUNITARIOS" Pane="1"></WatchVariable>
+  </WatchVariables>
+</Project>
+</Export>
