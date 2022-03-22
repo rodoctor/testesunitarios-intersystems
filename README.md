@@ -16,7 +16,7 @@ Tabela de conteúdos
 <p align="center">Desenvolvimento de um framework de testes que facilite o desenvolvimento de novos testes, e facilite a execução dos testes unitários</p>
 
 ## Instalação
-<p>Importar o projeto TESTES UNITARIOS.xml pelo Studio ou pelo portal de Administração do Cache/Ensemble/Iris</p>
+<p>Importar o projeto TESTES-UNITARIOS.xml pelo Studio ou pelo portal de Administração do Cache/Ensemble/Iris</p>
 
 ## Como Usar
 
